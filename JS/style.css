@@ -2,10 +2,13 @@
   margin: 0;
   padding: 0;
   box-sizing: inherit;
+  
 }
-html {
+ html {
   font-size: 62.5%;
   box-sizing: border-box;
+  height: 100%;
+  background-color: #008CBA;
 }
 .hidden {
   display: none;
@@ -20,6 +23,7 @@ html {
   background-color: #fff;
   padding: 2.5rem;
   display: flex;
+  background-color: #008CBA;
 }
 /* GENERAL */
 a:link,
@@ -69,4 +73,12 @@ a:visited {
 
 .button1 {background-color: #4CAF50;} /* Green */
 .button2 {background-color: #008CBA;} /* Blue */
-.button3 {background-color: #aa17a3;} /* Purple */
+.button3 {background-color: #6fadaf;} /* Purple */
+
+.h1{
+  text-align: center;
+  font-size: x-large;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  position: center;
+  margin-top: 10%;
+}

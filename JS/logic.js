@@ -73,7 +73,7 @@ d3.json('http://127.0.0.1:5000/api/accidents').then(response => {
      let afternoon = [];
      let night = [];
     
-     sample.forEach(ele=>{
+    sample.forEach(ele=>{
         if(ele.Crash_Time.split(":")[0] >5 && ele.Crash_Time.split(":")[0]<12){
             morning.push(ele)
          }

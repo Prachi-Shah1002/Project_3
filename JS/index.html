@@ -44,7 +44,7 @@
         z.style.display = "none";
       }
 
-      function piechart(){
+      function chart(){
         let x = document.getElementById("map");
         let y = document.getElementById("plot1");
         let z = document.getElementById("plot2");
@@ -62,16 +62,18 @@
         z.style.display = "block";
       }
     </script>
+
+  
   </head>
   <body>
-    <h1>NYC Traffic Accidents Dashboard</h1>
+    <h1 class="h1">NYC Traffic Accidents Dashboard</h1>
     <div class="container">
       <div class="sidebar list-headers">
         <div id="leafletMap" class="headers">
           <button class="button button1" onclick="map()">Leafleat Map</button>
         </div>
         <div id="pieChart" class="headers">
-          <button class="button button2"onclick="piechart()">Pie Chart</button>
+          <button class="button button2"onclick="chart()">Pie Chart</button>
         </div>
         <div id="barChart" class="headers">
           <button class="button button3"onclick="barchart()">Bar Chart</button>
