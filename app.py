@@ -1,40 +1,68 @@
-from flask import Flask, jsonify
-# from pymongo import MongoClient
-from flask_pymongo import PyMongo
+from flask import Flask, jsonify, make_response, redirect, url_for
+from flask_cors import CORS, cross_origin
+from pymongo import MongoClient
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})  # Allow all origins for routes under /api/
+def get_database():
+    CONNECTION_STRING = 'mongodb://localhost:27017'
+    client = MongoClient(CONNECTION_STRING)
+    return client['NYC_Acciedents']
 
-# Define the MongoDB Connection String
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/NYC_Acciedents'
-mongo = PyMongo(app)
+@app.route('/', methods=['GET'])
+def home():
+    return redirect(url_for('get_accidents'))
 
-@app.route("/")
-def welcome():
-    """List all available api routes."""
-    return (
-        f"Available Routes:<br/>"
-        f"/api/v1.0/Acciedents_Data<br/>"
-    )
-
-@app.route('/api/v1.0/Acciedents_Data', methods=['GET'])
+@app.route('/api/accidents', methods=['GET'])
+@cross_origin()
 def get_accidents():
-     # Endpoint to Get All Accidents
-    # Fetches and returns all the accidents data from the MongoDB Collection in JSON Format
-     accidents = mongo.db.Acciedents_Data # Select the MongoDB Collection
-     output = []  # Initialize the output list
+    dbname = get_database()
+    accident_data = dbname["Acciedents_Data"]
+    output = []
+    for accident in accident_data.find():
+        output.append({
+            'Crash_Date': accident.get('Crash_Date', ''),
+            'Crash_Time': accident.get('Crash_Time', ''),
+            'City_Name': accident.get('City_Name', ''),
+            'Zip_Code': accident.get('Zip_Code', ''),
+            'Latitude': accident.get('Latitude', ''),
+            'Longitude': accident.get('Longitude', ''),
+            'Vehicle_Type': accident.get('Vechicle_Type', ''),
+        })
+    response = make_response(jsonify({'result': output}))
+    return response
 
-    # Loop through the collection and append each document to the output list
-     for accident in accidents.find():
-         output.append({
-              'Crash_Date' :accident['Crash_Date'],
-              'Crash_Time': accident['Crash_Time'],
-              'City_Name':accident['City_Name'],
-              'Zip_Code':accident['Zip_Code'],
-              'Latitude':accident['Latitude'],
-              'Longitude' : accident['Longitude'],
-              'Collision_id' :accident['Collision_id'],
-              'Vechicle_Type' :accident['Vechicle_Type'],
-         })
-     return jsonify({'result':output})
+@app.route('/api/cities-accidents', methods=['GET'])
+def get_city_accidents():
+    dbname = get_database()
+    accident_data = dbname['Acciedents_Data']
+    pipeline = [
+        {"$group": {"_id": "$City_Name",
+                    "count": {"$sum": 1},
+                    "avgLat": {"$avg": "$Latitude"},
+                    "avgLon": {"$avg": "$Longitude"}}},
+        {"$sort": {"count": -1}}
+    ]
+    cities_accidents = list(accident_data.aggregate(pipeline))
+    result = [{"city": city["_id"],
+               "count": city["count"],
+               "latitude": city["avgLat"],
+               "longitude": city["avgLon"]} for city in cities_accidents]
+    response = make_response(jsonify({"result": result}))
+    return response
+
+@app.route('/api/vehicle-accidents', methods=['GET'])
+def get_vehicle_accidents():
+    dbname = get_database()
+    accident_data = dbname['Acciedents_Data']
+    pipeline = [
+        {"$group": {"_id": "$Vechicle_Type", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}
+    ]
+    vehicle_accidents = list(accident_data.aggregate(pipeline))
+    result = [{"vehicleType": vehicle["_id"], "count": vehicle["count"]} for vehicle in vehicle_accidents]
+    response = make_response(jsonify({"result": result}))
+    return response
+
 if __name__ == '__main__':
-     app.run(debug=True)
+    app.run(debug=True, port=5000)
