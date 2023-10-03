@@ -34,38 +34,54 @@
       href="https://unpkg.com/leaflet.markercluster@1.0.3/dist/MarkerCluster.Default.css"
     />
     <title>Document</title>
+    <script>
+      function map(){
+        let x = document.getElementById("map");
+        let y = document.getElementById("plot1");
+        let z = document.getElementById("plot2");
+        x.style.display = "block";
+        y.style.display = "none";
+        z.style.display = "none";
+      }
 
-
+      function piechart(){
+        let x = document.getElementById("map");
+        let y = document.getElementById("plot1");
+        let z = document.getElementById("plot2");
+        x.style.display = "none";
+        y.style.display = "block";
+        z.style.display = "none";
+      }
+    
+      function barchart(){
+        let x = document.getElementById("map");
+        let y = document.getElementById("plot1");
+        let z = document.getElementById("plot2");
+        x.style.display = "none";
+        y.style.display = "none";
+        z.style.display = "block";
+      }
+    </script>
   </head>
   <body>
+    <h1>NYC Traffic Accidents Dashboard</h1>
     <div class="container">
       <div class="sidebar list-headers">
-        <ul>
-          <li><div id="leafletMap" class="headers">
-          <p><h3>LeafLeat Map</h3></p>
-          <p>
-            <ul class="new-ul">
-              <li>The first Map is showing all Accident location with the pop up showing the vehicle type</li>
-              <li>Second map is showing the top 3 cities with the most accident</li>
-              <li>Third one is showing bottom 3 cities with most accident</li>
-            </ul>
-          </p>
-        </div></li>
-          <li><div id="pieChart" class="headers">
-          <p><h3>Pie Chart</h3></p>
-          <p>The Pie chart is showing the time of the day accident occur, it is grouped into Morning, Afternoon and Night</p>
+        <div id="leafletMap" class="headers">
+          <button class="button button1" onclick="map()">Leafleat Map</button>
         </div>
-        </li>
-          <li><div id="barChart" class="headers">
-          <p><h3>Bar Chart</h3></p>
-          <p>The Bar chart is showing Top 10 vehicle type with the most number accident</p>
-        </div></li>
-        </ul>
+        <div id="pieChart" class="headers">
+          <button class="button button2"onclick="piechart()">Pie Chart</button>
+        </div>
+        <div id="barChart" class="headers">
+          <button class="button button3"onclick="barchart()">Bar Chart</button>
+        </div>
       </div>
-
-      <div id="map"></div>
+      
+     <div id="map"></div>
       <div id="plot1"></div>
       <div id="plot2"></div>
+
     </div>
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
