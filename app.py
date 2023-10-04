@@ -33,21 +33,36 @@ def get_accidents():
     return response
 
 @app.route('/api/cities-accidents', methods=['GET'])
+@cross_origin()
 def get_city_accidents():
     dbname = get_database()
     accident_data = dbname['Acciedents_Data']
+    # Static city coordinates dictionary
+    city_coordinates = {
+        'MANHATTAN': {'latitude': 40.776676, 'longitude': -73.971321},
+        'QUEENS': {'latitude': 40.742054,'longitude': -73.769417},
+        'BRONX': {'latitude': 40.837048, 'longitude': -73.865433},
+        'STATEN ISLAND': {'latitude': 40.579021,'longitude': -74.151535},
+        'BROOKLYN': {'latitude': 40.650002, 'longitude': -73.949997},
+    }
     pipeline = [
-        {"$group": {"_id": "$City_Name",
-                    "count": {"$sum": 1},
-                    "avgLat": {"$avg": "$Latitude"},
-                    "avgLon": {"$avg": "$Longitude"}}},
+        {"$group": {"_id": "$City_Name", "count": {"$sum": 1}}},
         {"$sort": {"count": -1}}
     ]
     cities_accidents = list(accident_data.aggregate(pipeline))
-    result = [{"city": city["_id"],
-               "count": city["count"],
-               "latitude": city["avgLat"],
-               "longitude": city["avgLon"]} for city in cities_accidents]
+    result = []
+    for city in cities_accidents:
+        city_name = city["_id"]
+        count = city["count"]
+        latitude = city_coordinates.get(city_name, {}).get('latitude', None)
+        longitude = city_coordinates.get(city_name, {}).get('longitude', None)
+        if latitude and longitude:  # Only append cities which coordinates are known
+            result.append({
+                "city": city_name,
+                "count": count,
+                "latitude": latitude,
+                "longitude": longitude,
+            })
     response = make_response(jsonify({"result": result}))
     return response
 
